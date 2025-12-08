@@ -18,11 +18,13 @@ public class Customer {
     private String firstName;
     @Column(name = "last_name", nullable = false)
     private String lastName;
-    @Column(name = "email", unique = true)
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
     @Column(name = "phone_number", nullable = false, unique = true)
     private String phoneNumber;
     @Column(name = "address")
     private String address;
+
+    @OneToMany(mappedBy = "customer")
     private List<Order> orders;
 }
