@@ -1,1 +1,3 @@
 CREATE SCHEMA IF NOT EXISTS ecommerce;
+GRANT ALL PRIVILEGES ON SCHEMA ecommerce TO dev_user;
+GRANT USAGE ON SCHEMA ecommerce TO prod_user;
