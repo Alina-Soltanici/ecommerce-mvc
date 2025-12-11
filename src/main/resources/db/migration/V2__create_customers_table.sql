@@ -6,3 +6,7 @@ email VARCHAR(100) NOT NULL UNIQUE,
 phone_number VARCHAR(50) NOT NULL UNIQUE,
 address VARCHAR(255)
 );
+
+
+GRANT ALL PRIVILEGES ON TABLE ecommerce.customers TO dev_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE ecommerce.customers TO prod_user;
