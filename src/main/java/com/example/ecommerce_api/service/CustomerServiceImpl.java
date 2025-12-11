@@ -26,22 +26,22 @@ public class CustomerServiceImpl implements CustomerService{
             throw new EmailAlreadyExistsException("Email already exists.Try to define another email!");
         }
 
-       Customer saved = customerRepository.save(customerMapper.toCustomer(customerRequest));
-        return customerMapper.toCustomerResponse(saved);
+       Customer saved = customerRepository.save(customerMapper.toEntity(customerRequest));
+        return customerMapper.toDto(saved);
     }
 
 
     @Override
     public CustomerResponse getCustomer(Long id) {
         Customer foundedCustomer = customerRepository.findById(id).orElseThrow(() -> new CustomerNotFoundException("Customer not found!"));
-        return customerMapper.toCustomerResponse(foundedCustomer);
+        return customerMapper.toDto(foundedCustomer);
     }
 
 
     @Override
     public List<CustomerResponse> getCustomers() {
         return customerRepository.findAll().stream()
-                .map(customerMapper::toCustomerResponse)
+                .map(customerMapper::toDto)
                 .toList();
     }
 
@@ -67,7 +67,7 @@ public class CustomerServiceImpl implements CustomerService{
 
 
         Customer savedCustomer = customerRepository.save(foundedCustomer);
-        return customerMapper.toCustomerResponse(savedCustomer);
+        return customerMapper.toDto(savedCustomer);
     }
 
 
