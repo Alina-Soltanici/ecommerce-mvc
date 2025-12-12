@@ -3,15 +3,13 @@ package com.example.ecommerce_api.service;
 import com.example.ecommerce_api.dto.CustomerRequest;
 import com.example.ecommerce_api.dto.CustomerResponse;
 import com.example.ecommerce_api.entity.Customer;
-import com.example.ecommerce_api.exception.CustomerNotFoundException;
+import com.example.ecommerce_api.exception.ResourceNotFoundException;
 import com.example.ecommerce_api.exception.EmailAlreadyExistsException;
 import com.example.ecommerce_api.mapper.CustomerMapper;
 import com.example.ecommerce_api.repository.CustomerRepository;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +31,7 @@ public class CustomerServiceImpl implements CustomerService{
 
     @Override
     public CustomerResponse getCustomer(Long id) {
-        Customer foundedCustomer = customerRepository.findById(id).orElseThrow(() -> new CustomerNotFoundException("Customer not found!"));
+        Customer foundedCustomer = customerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Customer not found!"));
         return customerMapper.toDto(foundedCustomer);
     }
 
@@ -48,7 +46,7 @@ public class CustomerServiceImpl implements CustomerService{
 
     @Override
     public CustomerResponse updateCustomer(Long id, CustomerRequest updated) {
-        Customer foundedCustomer = customerRepository.findById(id).orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
+        Customer foundedCustomer = customerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
         if(!updated.getFirstName().isBlank()) {
             foundedCustomer.setFirstName(updated.getFirstName());
         }
@@ -73,7 +71,7 @@ public class CustomerServiceImpl implements CustomerService{
 
     @Override
     public void deleteCustomer(Long id) {
-        Customer foundedCustomer = customerRepository.findById(id).orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
+        Customer foundedCustomer = customerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
         customerRepository.delete(foundedCustomer);
     }
 }
