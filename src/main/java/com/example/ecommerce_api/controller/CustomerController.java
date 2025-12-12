@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -29,5 +28,21 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.OK).body(customers);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<CustomerResponse> getCustomerById(@PathVariable Long id) {
+        CustomerResponse customer = customerService.getCustomer(id);
+        return ResponseEntity.status(HttpStatus.OK).body(customer);
+    }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<CustomerResponse> updateCustomer(@PathVariable Long id, @RequestBody CustomerRequest request) {
+        CustomerResponse customer = customerService.updateCustomer(id, request);
+        return ResponseEntity.status(HttpStatus.OK).body(customer);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
+        customerService.deleteCustomer(id);
+        return ResponseEntity.noContent().build();
+    }
 }
