@@ -18,7 +18,7 @@ public class Customer {
     private String firstName;
     @Column(name = "last_name", nullable = false)
     private String lastName;
-    @Column(name = "email", unique = true, nullable = false)
+    @Column(name = "email", unique = true, nullable = false, updatable = false)
     private String email;
     @Column(name = "phone_number", nullable = false, unique = true)
     private String phoneNumber;
