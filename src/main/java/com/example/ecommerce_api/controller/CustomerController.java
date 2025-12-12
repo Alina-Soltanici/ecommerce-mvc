@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/customers")
 @RequiredArgsConstructor
@@ -20,6 +22,12 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
+
+    @GetMapping
+    public ResponseEntity<List<CustomerResponse>> getAllCustomers() {
+        List<CustomerResponse> customers = customerService.getCustomers();
+        return ResponseEntity.status(HttpStatus.OK).body(customers);
+    }
 
 
 }
