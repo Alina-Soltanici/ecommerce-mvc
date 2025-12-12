@@ -12,7 +12,7 @@ import java.util.List;
 public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "customer_id", nullable = false, unique = true, updatable = false )
+    @Column(nullable = false, unique = true, updatable = false )
     private Long id;
     @Column(name = "first_name", nullable = false)
     private String firstName;
