@@ -16,7 +16,7 @@ import java.util.List;
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "order_id", nullable = false, unique = true, updatable = false )
+    @Column(name = "id", nullable = false, unique = true, updatable = false )
     private Long id;
 
     @ManyToOne
