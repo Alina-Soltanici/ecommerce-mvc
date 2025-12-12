@@ -90,22 +90,22 @@ public class CustomerServiceImpl implements CustomerService{
             return new ResourceNotFoundException("Customer not found!");
         });
 
-        if(!updated.getFirstName().isBlank()) {
+        if(updated.getFirstName() != null && !updated.getFirstName().isBlank()) {
             log.info("Set first name: {} for user with ID {}", updated.getFirstName(), id);
             foundedCustomer.setFirstName(updated.getFirstName());
         }
 
-        if(!updated.getLastName().isBlank()) {
+        if(updated.getLastName() != null && !updated.getLastName().isBlank()) {
             log.info("Set last name: {} for user with ID {}", updated.getLastName(), id);
             foundedCustomer.setLastName(updated.getLastName());
         }
 
-        if(!updated.getPhoneNumber().isBlank()) {
+        if(updated.getPhoneNumber() != null && !updated.getPhoneNumber().isBlank()) {
             log.info("Set phone number: {} for user with ID {}", updated.getPhoneNumber(), id);
             foundedCustomer.setPhoneNumber(updated.getPhoneNumber());
         }
 
-        if(!updated.getAddress().isBlank()){
+        if(updated.getAddress() != null && !updated.getAddress().isBlank()){
             log.info("Set address: {} for user with ID {}", updated.getAddress(), id);
             foundedCustomer.setAddress(updated.getAddress());
         }
