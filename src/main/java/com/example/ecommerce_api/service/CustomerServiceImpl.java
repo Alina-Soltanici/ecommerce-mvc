@@ -58,7 +58,17 @@ public class CustomerServiceImpl implements CustomerService{
     @Transactional(readOnly = true)
     @Override
     public CustomerResponse getCustomer(Long id) {
-        Customer foundedCustomer = customerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Customer not found!"));
+        Customer foundedCustomer = customerRepository.findById(id).orElseThrow(() -> {
+            log.warn("Customer not found with ID {}", id);
+            return new ResourceNotFoundException("Customer not found!");
+        });
+
+
+        log.info("Customer retrieved - ID: {}, Name: {} {}, Email: {}",
+                foundedCustomer.getId(),
+                foundedCustomer.getFirstName(),
+                foundedCustomer.getLastName(),
+                foundedCustomer.getEmail());
         return customerMapper.toDto(foundedCustomer);
     }
 
@@ -75,25 +85,34 @@ public class CustomerServiceImpl implements CustomerService{
     @Override
     @Transactional
     public CustomerResponse updateCustomer(Long id, CustomerRequest updated) {
-        Customer foundedCustomer = customerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
+        Customer foundedCustomer = customerRepository.findById(id).orElseThrow(() -> {
+            log.warn("Customer not found with ID {}", id);
+            return new ResourceNotFoundException("Customer not found!");
+        });
+
         if(!updated.getFirstName().isBlank()) {
+            log.info("Set first name: {} for user with ID {}", updated.getFirstName(), id);
             foundedCustomer.setFirstName(updated.getFirstName());
         }
 
         if(!updated.getLastName().isBlank()) {
+            log.info("Set last name: {} for user with ID {}", updated.getLastName(), id);
             foundedCustomer.setLastName(updated.getLastName());
         }
 
         if(!updated.getPhoneNumber().isBlank()) {
+            log.info("Set phone number: {} for user with ID {}", updated.getPhoneNumber(), id);
             foundedCustomer.setPhoneNumber(updated.getPhoneNumber());
         }
 
         if(!updated.getAddress().isBlank()){
+            log.info("Set address: {} for user with ID {}", updated.getAddress(), id);
             foundedCustomer.setAddress(updated.getAddress());
         }
 
 
         Customer savedCustomer = customerRepository.save(foundedCustomer);
+        log.info("Customer with ID {} was updated successfully", id);
         return customerMapper.toDto(savedCustomer);
     }
 
@@ -101,7 +120,12 @@ public class CustomerServiceImpl implements CustomerService{
     @Override
     @Transactional
     public void deleteCustomer(Long id) {
-        Customer foundedCustomer = customerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
+        Customer foundedCustomer = customerRepository.findById(id).orElseThrow(() -> {
+            log.warn("Customer not found with ID {}", id);
+            return new ResourceNotFoundException("Customer not found!");
+        });
+
+        log.info("Customer with ID {} was deleted successfully", id);
         customerRepository.delete(foundedCustomer);
     }
 }
