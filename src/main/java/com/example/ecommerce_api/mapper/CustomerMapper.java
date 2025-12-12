@@ -4,7 +4,6 @@ import com.example.ecommerce_api.dto.CustomerRequest;
 import com.example.ecommerce_api.dto.CustomerResponse;
 import com.example.ecommerce_api.entity.Customer;
 import org.mapstruct.Mapper;
-import org.springframework.stereotype.Component;
 
 
 @Mapper(componentModel = "spring")
