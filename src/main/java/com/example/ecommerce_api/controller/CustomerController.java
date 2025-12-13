@@ -2,6 +2,7 @@ package com.example.ecommerce_api.controller;
 
 import com.example.ecommerce_api.dto.CustomerRequest;
 import com.example.ecommerce_api.dto.CustomerResponse;
+import com.example.ecommerce_api.dto.CustomerUpdateRequest;
 import com.example.ecommerce_api.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -37,7 +38,7 @@ public class CustomerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CustomerResponse> updateCustomer(@PathVariable Long id, @Valid @RequestBody CustomerRequest request) {
+    public ResponseEntity<CustomerResponse> updateCustomer(@PathVariable Long id, @Valid @RequestBody CustomerUpdateRequest request) {
         CustomerResponse customer = customerService.updateCustomer(id, request);
         return ResponseEntity.status(HttpStatus.OK).body(customer);
     }
