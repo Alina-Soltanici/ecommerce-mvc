@@ -9,8 +9,8 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface CustomerMapper {
     //Customer -> CustomerResponse
-    public CustomerResponse toDto(Customer customer);
+   CustomerResponse toDto(Customer customer);
 
     //CustomerRequest -> Customer
-    public Customer toEntity(CustomerRequest customerRequest);
+    Customer toEntity(CustomerRequest customerRequest);
 }
