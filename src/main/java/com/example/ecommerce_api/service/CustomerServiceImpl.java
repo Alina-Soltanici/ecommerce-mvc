@@ -2,6 +2,7 @@ package com.example.ecommerce_api.service;
 
 import com.example.ecommerce_api.dto.CustomerRequest;
 import com.example.ecommerce_api.dto.CustomerResponse;
+import com.example.ecommerce_api.dto.CustomerUpdateRequest;
 import com.example.ecommerce_api.entity.Customer;
 import com.example.ecommerce_api.exception.PhoneAlreadyExistsException;
 import com.example.ecommerce_api.exception.ResourceNotFoundException;
@@ -14,8 +15,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-
 import java.util.List;
 
 @Slf4j
@@ -64,12 +63,6 @@ public class CustomerServiceImpl implements CustomerService{
             return new ResourceNotFoundException("Customer not found!");
         });
 
-
-        log.info("Customer retrieved - ID: {}, Name: {} {}, Email: {}",
-                foundCustomer.getId(),
-                foundCustomer.getFirstName(),
-                foundCustomer.getLastName(),
-                foundCustomer.getEmail());
         return customerMapper.toDto(foundCustomer);
     }
 
@@ -77,44 +70,66 @@ public class CustomerServiceImpl implements CustomerService{
     @Transactional(readOnly = true)
     @Override
     public List<CustomerResponse> getCustomers() {
-        return customerRepository.findAll().stream()
+       List<CustomerResponse> customers = customerRepository.findAll().stream()
                 .map(customerMapper::toDto)
                 .toList();
+        log.debug("Retrieved {} customers", customers.size());
+        return customers;
     }
 
 
     @Override
     @Transactional
-    public CustomerResponse updateCustomer(Long id, CustomerRequest updated) {
+    public CustomerResponse updateCustomer(Long id, CustomerUpdateRequest updated) {
         Customer foundCustomer = customerRepository.findById(id).orElseThrow(() -> {
             log.warn("Customer not found with ID {}", id);
             return new ResourceNotFoundException("Customer not found!");
         });
 
+        boolean wasUpdated = false;
+
         if(updated.getFirstName() != null && !updated.getFirstName().isBlank()) {
-            log.info("Set first name: {} for user with ID {}", updated.getFirstName(), id);
             foundCustomer.setFirstName(updated.getFirstName());
+            wasUpdated = true;
         }
 
         if(updated.getLastName() != null && !updated.getLastName().isBlank()) {
-            log.info("Set last name: {} for user with ID {}", updated.getLastName(), id);
             foundCustomer.setLastName(updated.getLastName());
+            wasUpdated = true;
         }
 
         if(updated.getPhoneNumber() != null && !updated.getPhoneNumber().isBlank()) {
-            log.info("Set phone number: {} for user with ID {}", updated.getPhoneNumber(), id);
             foundCustomer.setPhoneNumber(updated.getPhoneNumber());
+            wasUpdated = true;
         }
 
         if(updated.getAddress() != null && !updated.getAddress().isBlank()){
-            log.info("Set address: {} for user with ID {}", updated.getAddress(), id);
             foundCustomer.setAddress(updated.getAddress());
+            wasUpdated = true;
         }
 
+        if (!wasUpdated) {
+            log.debug("No fields to update for customer {}", id);
+            return customerMapper.toDto(foundCustomer);
+        }
 
-        Customer savedCustomer = customerRepository.save(foundCustomer);
-        log.info("Customer with ID {} was updated successfully", id);
-        return customerMapper.toDto(savedCustomer);
+        try {
+            Customer savedCustomer = customerRepository.save(foundCustomer);
+            customerRepository.flush();
+            log.info("Customer {} updated successfully", id);
+            return customerMapper.toDto(savedCustomer);
+
+        } catch (DataIntegrityViolationException exception) {
+            String message = exception.getMostSpecificCause().getMessage().toLowerCase();
+
+            if (message.contains("phone") || message.contains("uk_phone")) {
+                log.warn("Duplicate phone update attempt for customer {}", id);
+                throw new PhoneAlreadyExistsException("Phone number already registered");
+            }
+
+            log.error("Unexpected data integrity violation during update for customer {}", id, exception);
+            throw new RuntimeException("Update failed", exception);
+        }
     }
 
 
@@ -123,10 +138,10 @@ public class CustomerServiceImpl implements CustomerService{
     public void deleteCustomer(Long id) {
         Customer foundCustomer = customerRepository.findById(id).orElseThrow(() -> {
             log.warn("Customer not found with ID {}", id);
-            return new ResourceNotFoundException("Customer not found!");
+            return new ResourceNotFoundException("Customer not found");
         });
 
-        log.info("Customer with ID {} was deleted successfully", id);
         customerRepository.delete(foundCustomer);
+        log.info("Customer with ID {} deleted successfully", id);
     }
 }
