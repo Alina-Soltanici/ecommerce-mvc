@@ -2,6 +2,7 @@ package com.example.ecommerce_api.service;
 
 import com.example.ecommerce_api.dto.ProductRequest;
 import com.example.ecommerce_api.dto.ProductResponse;
+import com.example.ecommerce_api.dto.ProductUpdateRequest;
 import com.example.ecommerce_api.entity.Product;
 import com.example.ecommerce_api.exception.DuplicateResourceException;
 import com.example.ecommerce_api.exception.ResourceNotFoundException;
@@ -48,11 +49,12 @@ public class ProductServiceImpl implements ProductService{
     public ProductResponse getProduct(Long id) {
         Product product = productRepository.findById(id).orElseThrow(() -> {
             log.warn("Product with id {} not found", id);
-            return new ResourceNotFoundException("Product not found");
+            return new ResourceNotFoundException("Product with id " + id + " not found");
         });
 
         return productMapper.toDto(product);
     }
+
 
     @Override
     @Transactional(readOnly = true)
@@ -63,26 +65,62 @@ public class ProductServiceImpl implements ProductService{
         return products;
     }
 
+
     @Override
     @Transactional
-    public ProductResponse updateProduct(Long id, ProductRequest updated) {
+    public ProductResponse updateProduct(Long id, ProductUpdateRequest updated) {
         Product foundProduct = productRepository.findById(id).orElseThrow(() -> {
             log.warn("Product with id {} not found", id);
-            return new ResourceNotFoundException("Product not found");
+            return new ResourceNotFoundException("Product with id " + id + " not found");
         });
 
+        boolean wasUpdated = false;
 
+        if(updated.getName() != null && !updated.getName().isBlank()) {
+            foundProduct.setName(updated.getName());
+            wasUpdated = true;
+        }
 
+        if(updated.getDescription() != null && !updated.getDescription().isBlank()) {
+            foundProduct.setDescription(updated.getDescription());
+            wasUpdated = true;
+        }
+
+        if(updated.getColor() != null) {
+            foundProduct.setColor(updated.getColor());
+            wasUpdated = true;
+        }
+
+        if(updated.getSize() != null) {
+            foundProduct.setSize(updated.getSize());
+            wasUpdated = true;
+        }
+
+        if(updated.getPrice() != null) {
+            foundProduct.setPrice(updated.getPrice());
+            wasUpdated=true;
+        }
+
+        if(!wasUpdated) {
+            log.debug("No fields to update for product {}", id);
+            return productMapper.toDto(foundProduct);
+        }
+
+        Product saved = productRepository.save(foundProduct);
+        log.info("Product {} updated successfully", id);
+        return productMapper.toDto(saved);
     }
+
 
     @Transactional
     @Override
     public void deleteProduct(Long id) {
-        if(!productRepository.existsById(id)) {
-            log.warn("Product with id {} not found", id);
-            throw new ResourceNotFoundException("Product not found");
-        }
+        productRepository.findById(id).orElseThrow(() -> {
+            log.warn("Product with id {} not found for deletion", id);
+            return new ResourceNotFoundException("Product with id " + id + " not found");
+        });
 
         productRepository.deleteById(id);
+        log.info("Product {} deleted successfully", id);
     }
 }
