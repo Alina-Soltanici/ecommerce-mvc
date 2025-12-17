@@ -2,6 +2,7 @@ package com.example.ecommerce_api.exception;
 
 import com.example.ecommerce_api.exception.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 
@@ -32,6 +33,15 @@ public class GlobalHandlerException {
     public ErrorResponse handlePhoneExists(PhoneAlreadyExistsException ex) {
         return new ErrorResponse(
                 "PHONE_ALREADY_EXISTS",
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+    }
+
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ErrorResponse handleDuplicateResource(DuplicateResourceException ex) {
+        return new ErrorResponse(
+                "SKU_ALREADY_EXISTS",
                 ex.getMessage(),
                 LocalDateTime.now()
         );
