@@ -1,0 +1,2 @@
+ALTER TABLE ecommerce.products
+ADD COLUMN sku VARCHAR(100) NOT NULL UNIQUE;
