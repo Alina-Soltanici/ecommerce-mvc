@@ -2,6 +2,7 @@ package com.example.ecommerce_api.controller;
 
 import com.example.ecommerce_api.dto.ProductRequest;
 import com.example.ecommerce_api.dto.ProductResponse;
+import com.example.ecommerce_api.dto.ProductUpdateRequest;
 import com.example.ecommerce_api.entity.Product;
 import com.example.ecommerce_api.service.ProductService;
 import javax.validation.Valid;
@@ -35,5 +36,11 @@ public class ProductController {
     public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
         ProductResponse product = productService.getProduct(id);
         return ResponseEntity.status(HttpStatus.OK).body(product);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductUpdateRequest updateRequest) {
+        ProductResponse productResponse = productService.updateProduct(id, updateRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(productResponse);
     }
 }
