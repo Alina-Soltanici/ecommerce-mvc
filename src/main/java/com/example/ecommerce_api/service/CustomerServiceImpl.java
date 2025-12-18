@@ -31,8 +31,10 @@ public class CustomerServiceImpl implements CustomerService{
 
         try {
             Customer saved = customerRepository.save(customerMapper.toEntity(customerRequest));
-            log.info("Customer registration successful - ID: {}, Email hash: {}",
-                    saved.getId(), emailHash);
+
+            customerRepository.flush();
+
+            log.info("Customer registration successful - ID: {}, Email hash: {}", saved.getId(), emailHash);
             return customerMapper.toDto(saved);
 
         } catch (DataIntegrityViolationException exception) {
@@ -136,12 +138,12 @@ public class CustomerServiceImpl implements CustomerService{
     @Override
     @Transactional
     public void deleteCustomer(Long id) {
-        Customer foundCustomer = customerRepository.findById(id).orElseThrow(() -> {
-            log.warn("Customer not found with ID {}", id);
-            return new ResourceNotFoundException("Customer not found");
+        customerRepository.findById(id).orElseThrow(() -> {
+            log.warn("Customer with id {} not found for deletion", id);
+            return new ResourceNotFoundException("Customer with id " + id + " not found");
         });
 
-        customerRepository.delete(foundCustomer);
-        log.info("Customer with ID {} deleted successfully", id);
+        customerRepository.deleteById(id);
+        log.info("Customer {} deleted successfully", id);
     }
 }
