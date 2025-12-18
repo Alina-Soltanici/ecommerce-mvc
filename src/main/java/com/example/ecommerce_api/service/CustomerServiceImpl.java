@@ -32,7 +32,7 @@ public class CustomerServiceImpl implements CustomerService{
         try {
             Customer saved = customerRepository.save(customerMapper.toEntity(customerRequest));
 
-            customerRepository.flush();
+            customerRepository.flush(); // Force immediate database write
 
             log.info("Customer registration successful - ID: {}, Email hash: {}", saved.getId(), emailHash);
             return customerMapper.toDto(saved);
@@ -117,7 +117,8 @@ public class CustomerServiceImpl implements CustomerService{
 
         try {
             Customer savedCustomer = customerRepository.save(foundCustomer);
-            customerRepository.flush();
+            customerRepository.flush(); // Force immediate database write
+
             log.info("Customer {} updated successfully", id);
             return customerMapper.toDto(savedCustomer);
 
