@@ -27,8 +27,9 @@ public class ProductServiceImpl implements ProductService{
     public ProductResponse createProduct(ProductRequest productRequest) {
         try {
             Product product = productRepository.save(productMapper.toEntity(productRequest));
-            log.info("Product created successfully with id: {} and SKU: {}",
-                    product.getId(), product.getSku());
+            productRepository.flush(); // Force immediate database write
+
+            log.info("Product created successfully with id: {} and SKU: {}", product.getId(), product.getSku());
             return productMapper.toDto(product);
 
         } catch (DataIntegrityViolationException e) {
